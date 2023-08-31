@@ -1,0 +1,73 @@
+# https://golangci-lint.run/usage/configuration/#output-configuration
+linters-settings:
+    gocyclo:
+        min-complexity: 25
+    goconst:
+        min-len: 2
+        min-occurrences: 3
+    gosec:
+        config:
+            G101:
+                pattern: "(?i)passwd|pass|password|pwd|secret|token|apiKey|bearer|cred" # Default gosec pattern is used here, excluding `pw` match, because of false positives on variables with names like `nedaPWebhook` (https://github.com/securego/gosec/blob/2a4064d45d18fb7f192281f10dcff762629dca2c/rules/hardcoded_credentials.go#L120)
+                ignore_entropy: false
+                entropy_threshold: "80.0"
+                per_char_threshold: "3.0"
+                truncate: "16"
+    revive:
+        ignore-generated-header: true
+    lll:
+        # max line length, lines longer will be reported. Default is 120.
+        # '\t' is counted as 1 character by default, and can be changed with the tab-width option
+        line-length: 120
+        # tab width in spaces. Default to 1.
+        tab-width: 4
+
+linters:
+    disable-all: true
+    enable:
+        - errcheck
+        - govet
+        - gocyclo
+        - unused
+        - ineffassign
+        - unconvert
+        - goconst
+        - gosimple
+        - staticcheck
+        - gosec
+        - tparallel
+        - nakedret
+        - gofmt
+        - gocognit
+        - godot
+        - misspell
+        - noctx
+        - nolintlint
+        - goimports
+        - revive
+        - lll
+
+run:
+    deadline: 10m
+    skip-dirs:
+        - ".*\\testdata"
+        - ".*proto"
+    skip-files:
+        - ".*pb\\.go"
+        - ".*pb\\.gw\\.go"
+        - assets.go
+
+output:
+    # colored-line-number|line-number|json|tab|checkstyle, default is "colored-line-number"
+    format: checkstyle:lint-report.out,colored-line-number:stdout
+
+    # print lines of code with issue, default is true
+    print-issued-lines: true
+
+    # print linter name in the end of issue text, default is true
+    print-linter-name: true
+
+service:
+    golangci-lint-version: 1.52.2 # use fixed version to not introduce new linters unexpectedly
+    prepare:
+        - echo "here I can run custom commands, but no preparation needed"
